@@ -1,0 +1,153 @@
+components/TaskList.js
+
+
+
+import React, { useEffect, useState } from 'react';
+import { getTasks, deleteTask } from '../services/taskService';
+
+function TaskList({ onEdit }) {
+  const [tasks, setTasks] = useState([]);
+
+  const loadTasks = async () => {
+    const res = await getTasks();
+    setTasks(res.data);
+  };
+
+  useEffect(() => {
+    loadTasks();
+  }, []);
+
+  const handleDelete = async (id) => {
+    await deleteTask(id);
+    loadTasks();
+  };
+
+  return (
+    <div>
+      <h2>Task List</h2>
+      <ul>
+        {tasks.map(task => (
+          <li key={task._id}>
+            {task.name} - {task.status} - {task.priority}
+            <button onClick={() => onEdit(task)}>Edit</button>
+            <button onClick={() => handleDelete(task._id)}>Delete</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default TaskList;
+
+
+
+*******************************************************************************/
+
+components/TaskForm.js
+
+import React, { useState, useEffect } from 'react';
+import { createTask, updateTask } from '../services/taskService';
+
+const initialForm = {
+  name: '',
+  assigned_to: 'user1',
+  status: 'Pending',
+  priority: 'Medium',
+  due_date: '',
+  comment: ''
+};
+
+function TaskForm({ taskToEdit, refreshTasks, clearEdit }) {
+  const [form, setForm] = useState(initialForm);
+
+  useEffect(() => {
+    if (taskToEdit) {
+      setForm({
+        ...taskToEdit,
+        due_date: new Date(taskToEdit.due_date).toISOString().split('T')[0]
+      });
+    }
+  }, [taskToEdit]);
+
+  const handleChange = e => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    if (taskToEdit) {
+      await updateTask(taskToEdit._id, form);
+      clearEdit();
+    } else {
+      await createTask(form);
+    }
+    setForm(initialForm);
+    refreshTasks();
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input name="name" placeholder="Task Name" value={form.name} onChange={handleChange} required />
+      <select name="assigned_to" value={form.assigned_to} onChange={handleChange}>
+        <option value="user1">user1</option>
+        <option value="user2">user2</option>
+        <option value="user3">user3</option>
+      </select>
+      <select name="status" value={form.status} onChange={handleChange}>
+        <option value="Pending">Pending</option>
+        <option value="InProgress">InProgress</option>
+        <option value="Completed">Completed</option>
+      </select>
+      <select name="priority" value={form.priority} onChange={handleChange}>
+        <option value="High">High</option>
+        <option value="Medium">Medium</option>
+        <option value="Low">Low</option>
+      </select>
+      <input type="date" name="due_date" value={form.due_date} onChange={handleChange} />
+      <input name="comment" placeholder="Comment" value={form.comment} onChange={handleChange} />
+      <button type="submit">{taskToEdit ? 'Update' : 'Add'} Task</button>
+    </form>
+  );
+}
+
+export default TaskForm;
+
+
+
+
+
+
+
+
+
+
+
+*********************************************************************************************/
+
+app.js
+
+
+import React, { useState } from 'react';
+import TaskForm from './components/TaskForm';
+import TaskList from './components/TaskList';
+
+function App() {
+  const [taskToEdit, setTaskToEdit] = useState(null);
+  const [refresh, setRefresh] = useState(0);
+
+  return (
+    <div>
+      <h1>To-Do List</h1>
+      <TaskForm taskToEdit={taskToEdit} clearEdit={() => setTaskToEdit(null)} refreshTasks={() => setRefresh(r => r + 1)} />
+      <TaskList onEdit={setTaskToEdit} key={refresh} />
+    </div>
+  );
+}
+
+export default App;
+
+***********************************************************************************************/
+
+
+

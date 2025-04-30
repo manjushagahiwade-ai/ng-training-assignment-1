@@ -1,0 +1,56 @@
+https://github.com/manjushagahiwade-ai/ng-training-assignment-1
+
+
+Rest Api Documentation
+
+
+1]To get all todos
+
+Api:http://localhost:3000/api/tasks/
+
+Output:
+[
+  {
+    "id": 1,
+    "name": "Todo1",
+    "assigned_to": "user1",
+    "status": "Completed",
+    "due_date": "12/10/2024",
+    "priority": "High",
+    "comment": "The task is good"
+  },
+  {
+    "id": 2,
+    "name": "Todo2",
+    "assigned_to": "user2",
+    "status": "InProgress",
+    "due_date": "14/9/2024",
+    "priority": "Low",
+    "comment": "The task is good"
+  }
+]
+***********************************************************************************/
+
+2]To get todos by id
+
+Api:http://localhost:3000/api/task/1/
+
+output :
+
+{
+  "id": 1,
+  "name": "Todo1",
+  "assigned_to": "user1",
+  "status": "Completed",
+  "due_date": "12/10/2024",
+  "priority": "High",
+  "comment": "The task is good"
+}
+
+********************************************************************************/
+
+
+
+
+
+
